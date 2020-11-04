@@ -2,7 +2,7 @@
 load std
 fn greet {
     name = $1
-    if {~ $#name 0} { name = World}
+    if {~ $#name 0} {name = World}
     echo Hello, $name!
 }
 
