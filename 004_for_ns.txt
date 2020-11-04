@@ -1,0 +1,1499 @@
+INTRO(1)                                                 INTRO(1)
+
+NAME
+     intro - introduction to Inferno
+
+DESCRIPTION
+     Inferno is a virtualised operating system that can run
+     natively across a wide range of processor architectures or
+     hosted on a wide range of operating systems. The principal
+     components of the system are:
+
+     •    The Inferno kernel which can run both native and
+          `hosted' on a range of platforms and which presents the
+          same interface to programs in both cases.
+
+     •    The Dis virtual machine.
+
+     •    Styx - the tiny broad-spectrum file service protocol.
+
+     •    Limbo - a new simple, modular, concurrent programming
+          language.
+
+     •    Tk and Prefab - graphical user interface (`GUI')
+          primitives without a lot of goo.
+
+     •    The portable cross-development suites that allow any
+          native Inferno platform to be cross-compiled on any
+          hosted system.
+
+  Manual conventions
+     Throughout this volume, manual entries are cross referenced
+     by a notation of the form entry(n), where entry is the name
+     of the page (in italics) and n is the manual section holding
+     the page. The same name may be found in more than one
+     section. For example, the environment variable inspection
+     command documented in env(1), is quite distinct from the
+     module interface to environment variables which is
+     documented in env(2), which in turn is distinct from the
+     component documented by env(3), which describes the
+     underlying device that implements environment variables.
+
+     Pathnames are understood to exist in the file system space
+     visible from Inferno. The root of this space when viewed
+     from the host operating system is the Inferno installation
+     directory, sometimes called the Inferno root directory.
+     Unless otherwise enabled, the result of changes made by
+     Inferno programs to files in the file system space is
+     generally restricted to this portion of the host file
+     system.
+
+  Name spaces
+     One of the great strengths of Inferno is the name space
+     interface to the resources available to a process, a
+     hierarchical structure which looks very similar to a
+     conventional file system. Resources look like files and
+     directories that can be read and written, created and
+     deleted in a way familiar to most programmers.
+
+     While this interface is used to provide programs with access
+     to conventional disk-based filestore, it is also used to
+     control devices and user level programs mounted in a
+     process's name space. Once a program or a device has been
+     attached to a process's name space, the program or device
+     interprets any access to the attachment point; it can
+     synthesise on demand the names of new files or directories,
+     create their contents on the fly as the process reads from
+     them, and interpret written data as commands or data as
+     appropriate (See bind(1) and sys-bind(2)).
+
+     Each new Inferno process inherits its parent's name space,
+     but it can divorce its own name space from that of its
+     parent (see sys-pctl(2)), giving programs the capability to
+     attach resources to their own name space without making them
+     globally visible. This per-process name space is potent but
+     potentially confusing, so, to help programs that might be
+     confused, namespace(4) gives some conventions that should be
+     adhered to if programs are to work properly. (That page also
+     gives a general overview of the Inferno source tree.)
+
+  Start up
+     See ``Installation of the Inferno Software'' in Volume 2 for
+     details of how to start up Inferno.
+
+  Window/development environment
+     Inferno provides a powerful development environment in which
+     to write, compile, execute and debug programs written in the
+     Limbo language. It gives the developer a clean platform from
+     which he can utilise an operating system which contains many
+     new and innovative ideas and some, carefully chosen, older
+     concepts that have survived the test of time and are likely
+     to be familiar to most Plan 9 or Unix users.
+
+     Superficially, the Inferno shell sh(1) looks and behaves
+     much like its Plan 9 or Unix contemporaries but, at heart,
+     it is quite different. The shell takes advantage of the
+     dynamic module loading services that Inferno provides to
+     allow it to be dynamically extended in appropriate and
+     interesting ways. For example, by loading the sh-tk(1)
+     builtin module, a shell script can provide all the
+     programming logic required to manage a Tk window with full
+     Tk functionality in, surprisingly, few lines of code; by
+     loading the sh-file2chan(1) builtin module, a shell script
+     can create a file in the name space whose properties are
+     completely under the control of the script.
+
+     The Inferno window manager wm(1) allows the user to manage
+     the order and position of a dynamic collection of
+     application windows in which to perform various tasks. Acme
+     (1) is targeted at programmers. It is an editor, a shell and
+     window system all rolled into one, which through thoughtful
+     and consistent application of simple principles results in a
+     rich and productive programming environment with a user
+     interface that feels right. Acme requires a three-button
+     mouse and attaches distinct functions to the three mouse
+     buttons and, indeed, to chords of buttons to maximise the
+     productivity of the programmer's mouse. For more details of
+     the Acme user interface see the paper "Acme: A User
+     Interface for Programmers" in Volume 2.
+
+     Limbo programs are compiled with limbo(1). This compiles
+     Limbo source into a machine-independent format (Dis) for
+     execution by the Inferno Dis virtual machine. The virtual
+     machine is designed to provide safe execution of programs
+     even on machines without memory protection. Debugging is
+     made straightforward by use of either stack(1) , to display
+     the execution stack of a process or, if a finer inspection
+     is required, deb(1), a novel window based debugger that
+     allows the user to identify the exact location of problems,
+     set break points and walk the data structures of any module
+     loaded by the program. See "Program Development in Inferno"
+     in Volume 2 for details on how to use the development tools
+     that Inferno provides.
+
+SEE ALSO
+     Section (1) (this section) for the commonly-used commands.
+     Section (2) for Limbo modules, including Inferno's system calls.
+     Section (3) for kernel devices (accessed by `bind').
+     Section (4) for file services (accessed by `mount').
+     Section (5) for the Styx file service protocol.
+     Section (6) for file formats and system conventions.
+     Section (7) for databases and database access modules.
+     Section (8) for administrative modules and system services.
+     Section (9) for the reference for Inferno's Tk variant, Limbo/Tk.
+     Section (10) for the build environment and device driver implementation.
+
+     Volume 2 contains papers and other documentation about Inferno.
+
+     The back of this volume contains a permuted index.
+
+DIAGNOSTICS
+     On successful execution, a process can simply exit. Programs
+     (modules) that wish to return error status to the command
+     interpreters sh(1) and mash(1) do so by raising a special
+     exception (eg, using the raise statement in Limbo). The
+     exception's value is a string beginning with the text `fail:
+     '.
+
+SEE ALSO
+     intro(2), intro(3), intro(4), intro(5), intro(6), intro(7),
+     intro(8), intro(9), intro(10)
+
+                         Inferno Manual
+INTRO(2)                                                 INTRO(2)
+
+NAME
+     intro - introduction to Limbo modules for the Inferno system
+
+SYNOPSIS
+     include "sys.m";
+     sys := load Sys Sys->PATH;
+
+     include "draw.m";
+     draw := load Draw Draw->PATH;
+
+     include "tk.m";
+     tk := load Tk Tk->PATH;
+
+     ... etc.
+
+     Generically:
+     include "module.m";
+     module := load Module Module->PATH;
+
+DESCRIPTION
+     This section introduces the Limbo modules available to the
+     programmer; see the corresponding manual pages for more
+     information. Each module is declared with a single Limbo
+     include file. Before calling a module's functions, an
+     application must load the module; the application stores the
+     resulting value in a variable for later use as the module
+     qualifier. The examples above illustrate the style. It will
+     usually be necessary in some cases to qualify names with the
+     appropriate module pointer or to import the types and
+     functions; the manual pages assume the names are accessible
+     in the current scope.
+
+     Although many modules are self-contained, dependencies may
+     exist. For example, the system module, Sys, provides basic
+     services that many other modules require. These are the
+     Inferno equivalent to `system calls'.
+
+     In a few cases, several related modules share a single
+     include file; for instance, security.m.
+
+     The manual pages describe how to include a module definition
+     during compilation and load an implementation during
+     execution. The documentation also lists relevant functions
+     or abstract data types. Although the include files declare
+     these components, the manual pages list them explicitly. In
+     all cases, the enclosing module declaration is assumed so
+     that unqualified identifiers can be used in the text without
+     ambiguity, reducing clutter in the text. In practice when
+     programming, many consider it good style to use an explicit
+     module reference for functions and constants.
+
+     The Limbo modules are identical on any machine that is
+     running Inferno, whether native or hosted, which enables
+     Limbo programs to be written and tested on any Inferno
+     system.
+
+     Many modules are described in a single page, such as regex
+     (2). Several larger modules are explained in several
+     sections, such as math-intro(2), math-elem(2), math-fp(2),
+     and math-linalg(2).
+
+  Exceptions
+     Exception handling is now part of the Limbo language,
+     replacing an older scheme that used special system calls.
+     Various exceptions can be raised by the virtual machine when
+     run-time errors are detected. These are the common ones:
+
+     alt send/recv on same chan
+          It is currently illegal for a channel to appear in two
+          alt statements if they either both receive or both send
+          on it. (It is fine to send in one and receive in the
+          other.)
+
+     array bounds error
+          Array subscript out of bounds.
+
+     dereference of nil
+          Attempt to use a ref adt or index an array with value
+          nil .
+
+     invalid math argument
+          Inconsistent values provided to functions of math-intro
+          (2).
+
+     module not loaded
+          Attempt to use an uninitialised module variable.
+
+     negative array size
+          The limit in an array constructor was negative.
+
+     out of memory: pool
+          The given memory pool is exhausted. Pool is currently
+          one of main (kernel memory including Tk allocations),
+          heap (most Limbo data), and image memory for draw(3).
+
+     zero divide
+          Integer division (or mod) by zero.
+
+     There are currently two more classes of exception string
+     with a conventional interpretation imposed not by the
+     run-time system proper, but by Limbo components:
+
+     fail:reason
+          Commands use this exception to provide an `exit status'
+          to a calling program, particularly the shell sh(1); see
+          also sh(2). The status is given by the reason following
+          the `fail:' prefix.
+
+     assertion:error
+          A module detected the specified internal error. This is
+          most often used for cases where a particular
+          possibility ``cannot happen'' and there is no other
+          need for an error value in the interface.
+
+     Otherwise, most module interfaces tend to use explicit error
+     return values, not exceptions.
+
+     Note that a Limbo exception handler can do pattern matching
+     to catch a class of exceptions:
+
+          {
+          	body of code to protect
+          } exception e {
+          "out of memory:*" =>
+          	recovery action
+          "assertion:*" =>
+          	fatal_error(e);
+          }
+
+     The effect of an unhandled exception in a process that is
+     part of an error-recovery group can be controlled using the
+     mechanisms described in prog(3) as accessed using exception
+     (2).
+
+SEE ALSO
+     draw-intro(2), exception(2), keyring-intro(2), math-intro
+     (2), prefab-intro(2), security-intro(2), sys-intro(2)
+
+                         Inferno Manual
+MATH-INTRO(2)                                       MATH-INTRO(2)
+
+NAME
+     Math: intro - elementary numerics
+
+SYNOPSIS
+     include "math.m";
+     math := load Math Math->PATH;
+
+DESCRIPTION
+     Inferno's math module and Limbo compiler provide the
+     fundamental floating point environment and ``elementary
+     functions''.
+
+     Limbo expressions involving only literal and named constants
+     are evaluated at compile time with all exceptions ignored.
+     However, arithmetic on variables is left to run-time, even
+     if data path analysis shows the value to be a compile time
+     constant. This implies that tools generating Limbo source
+     must do their own simplification, and not expect the
+     compiler to change x/x into 1, or -(y-x) into x-y, or even
+     x-0 into x.
+
+     Subexpression elimination and other forms of code motion may
+     be done by the compiler, but not across calls to the mode
+     and status functions described in math-fp(2). Removal of
+     parentheses or factoring is not performed by the compiler.
+     The evaluation order of a+b+c follows the parse tree and is
+     therefore the same as for (a+b)+c. These rules are the same
+     as for Fortran and C.
+
+     Contracted multiply-add instructions (with a single
+     rounding) are not generated by the compiler, though they may
+     be used in the native BLAS (linear algebra) libraries. All
+     arithmetic follows the IEEE floating point standard, except
+     that denormalized numbers may be replaced by flush-to-0,
+     depending on what the hardware makes feasible.
+
+     Binary/decimal conversion is properly rounded. In
+     particular, printing a real using %g and reading it on a
+     different machine is guaranteed to recover identical bits,
+     including conversions done by the compiler. The one
+     exception is that smaller, faster, but sloppier run-time
+     conversion routines may be used when mandated by limited
+     memory embedded systems. Programmers may assume, however,
+     that the features described in these man pages are present
+     in all Inferno systems intended for general computing.
+
+SOURCE
+     /libinterp/math.c
+
+SEE ALSO
+     See math-fp(2) for floating point control and primitive
+     arithmetic operations, math-elem(2) for the classical
+     elementary functions of applied mathematics, and math-linalg
+     (2) for basic linear algebra functions.
+
+                         Inferno Manual
+PREFAB-INTRO(2)                                   PREFAB-INTRO(2)
+
+NAME
+     Prefab: intro - Interactive TV tookit
+
+SYNOPSIS
+     include "draw.m";
+     include "prefab.m";
+     prefab := load Prefab Prefab->PATH;
+
+DESCRIPTION
+     The Prefab module contains components for building graphics
+     objects suitable for Interactive Television (ITV)
+     applications using infrared remote controls. Using the Draw
+     module's operations for simple text and images (see
+     draw-intro(2)), the toolkit can group individual items,
+     treat those groups as units, and then activate the items on
+     command. The other user interface toolkit, tk(2), provides
+     facilities for keyboard- and mouse-driven applications.
+
+     The objects on the screen are of type Compound, each of
+     which occupies a unique window on the display and contains
+     objects of type Element. An Element may be a single object
+     or a list of further Elements, to build hierarchically
+     structured components.
+
+     Prefab defines Environ and Style types that specify the
+     appearance of objects: their colours, fonts, backgrounds,
+     and so on. A Style gives font and colour information, while
+     an Environ identifies the Screen upon which the items will
+     be displayed and the Style in which they will be drawn.
+
+     Applications should allocate Elements and Compounds only
+     through the appropriate member functions, as described in
+     the corresponding sections of the manual. Items created with
+     regular Limbo definitions will not work properly. Moreover,
+     except where indicated, applications should not modify the
+     data members directly. Although the type definitions make
+     data members visible, the members should usually be treated
+     as read-only data.
+
+SOURCE
+     /libinterp/prefab.c
+     /libprefab/*.c
+
+SEE ALSO
+     draw-intro(2), ir(2)
+
+                         Inferno Manual
+SECURITY-INTRO(2)                               SECURITY-INTRO(2)
+
+NAME
+     intro - introduction to security
+
+SYNOPSIS
+     include "keyring.m";
+     include "security.m";
+
+DESCRIPTION
+     This is an introduction to some of the principals behind
+     computer security as well as a description of how these
+     principals are used in Inferno. More detailed descriptions
+     of the methods and principals for ensuring secure
+     communications on computers can be found in texts such as
+     Applied Cryptography by Bruce Schneier (published 1996, J.
+     Wiley & Sons, Inc.).
+
+     Inferno provides several levels of security:
+
+     •    Mutual authentication means that two users or
+          applications that want to communicate can establish
+          that they are who they say they are. It is the basic
+          level of security provided by Inferno. Thus, for
+          example, when a user connects to an Inferno service,
+          they can and must establish that they are a legitimate
+          user.
+
+     •    Message digesting is a technique to ensure that an
+          interloper cannot modify messages sent between users.
+
+     •    Encryption protects the confidentiality of messages so
+          that only the party or parties for whom the messages
+          are intended can decrypt and read them. Inferno makes
+          it easy to enforce any one or all of these levels of
+          security.
+
+  Mutual Authentication
+     Authentication requires a combination of elements: a third
+     party that each user can trust, an algorithm or mathematical
+     method to secure messages between users, and a protocol for
+     exchanging messages that ensures that a third party or
+     intruder cannot pretend to be one of the users, or use some
+     other method to undermine their communication.
+
+     One important method for authenticating users in Inferno is
+     the use of digital signatures. Like signing a letter a
+     digital signature testifies to the identity of the sender.
+     Fortunately, it is much more difficult to forge a digital
+     signature. 
+
+     Even after users are authenticated to each other, it is
+     possible for someone `listening' to their communication to
+     read and possibly modify their messages without the users
+     knowing it. So authentication solves one security
+     requirement, but not all of them.
+
+  Message Digesting
+     Message digesting uses a mathematical hashing algorithm to
+     convert a message into an indecipherable string of fixed
+     length (a digest). By appending the hashed value to the
+     message, the authenticity of the message can be verified.
+     The recipient takes the message, applies the same hashing
+     algorithm used by the sender, and compares the value to the
+     one sent. If the values are the same, then the message
+     received must be the same as the one that was sent.
+
+     Inferno includes a counter in the digest to check that
+     messages were received in the correct order and that no
+     messages were inserted by a third party listening in on the
+     line. A secret key is also included in the digest to verify
+     the identity of the sender.
+
+     A message digest ensures that no one has tampered with a
+     message. It does not prevent someone from reading it.
+
+  Message Encryption
+     The traditional notion of encryption is translating a
+     message, called a plaintext in cryptography, into something
+     unreadable, called a ciphertext. Its most obvious use is to
+     provide confidentiality. Only someone able to decrypt the
+     message, or translate it back to its original form, can
+     interpret it.
+
+     A mathematical algorithm is used to both encrypt and decrypt
+     a message. Encryption algorithms depend on keys or bit
+     strings of a specified length for encryption and decryption.
+     The nature of an algorithm and the size of the key determine
+     the degree of security.
+
+     Two basic types of algorithms are used in cryptography:
+     private key (or symmetric key) and public key algorithms.
+     With symmetric algorithms the same key is used to encrypt
+     and decrypt a message. This key must be a secret, known only
+     to the users who want to communicate. It is often called a
+     private or secret key. 
+
+     A public key algorithm may use a private or secret key to
+     encrypt a message and a public key to decrypt it, or
+     vice-versa. The private or secret key is known only to one
+     user. The public key, however, does not have to be kept
+     secret and may be distributed to anyone the user wishes to
+     communicate with. 
+
+     Inferno uses a public key algorithm for digital signatures
+     and symmetric key algorithms for encryption.
+
+     A user can encrypt a message with or without appending a
+     message digest.
+
+  Algorithms Supplied With Inferno
+     Some of the considerations when choosing algorithms are
+     speed, degree of security, and political restrictions on
+     export. The algorithms used in Inferno are well known and
+     rigorously tested.
+
+     One-way hashing algorithms
+          SHA1 and MD5 are well known (in cryptographic circles)
+          one-way hashing algorithms. MD5 is a high-speed,
+          128-bit hash. SHA1 is a somewhat slower but more secure
+          160-bit hash.
+
+     Elgamal and RSA public key signature algorithms
+          Elgamal is a public key system widely used for creating
+          digital signatures. It uses a private key for signing a
+          message and a public key for verifying it. Inferno also
+          supports the widely-used RSA and DSS-1 signature
+          algorithms. Because Inferno initially used Elgamal
+          keys, it does not assume that either a private or
+          public key can be used for encryption or decryption.
+          With constant advances in the field of cryptography,
+          one of the design goals of Inferno is to create a
+          security component that will be easy to enhance as new
+          algorithms are developed.
+
+     Encryption algorithms
+          DES (the Data Encryption Standard) was adopted by the
+          US government in 1976 as a standard
+          encryption/decryption system for unclassified data in
+          the United States. It is widely used, especially by the
+          financial services industry. Two types of DES are
+          offered: DES-ECB and DES-CBC. ECB or Electronic Code
+          Book and CBC or Chain Block Coding are part of the ANSI
+          Banking Standard. CBC is more complex and less
+          vulnerable than ECB. Both versions of DES provide
+          56-bit keys.
+
+          RC4 is a symmetric or private key system that is about
+          10 times faster than DES.
+
+     Diffie-Hellman key exchange algorithm
+          Diffie-Hellman is an algorithm for creating a secret
+          key to be shared by users for encrypting messages
+          (sometimes called a shared secret). It requires each
+          user to exchange certain information with the other.
+          This information can be exchanged in the open, that is,
+          without encryption. Each user is able to create the
+          same, secret key from this information. However, no one
+          else listening to their exchange would be able to
+          create or determine the secret key.
+
+  Security Protocols
+     Cryptanalysis is the study of how to break cryptographic
+     systems. Attempts to disrupt or listen to confidential
+     communications are called attacks. Usually the objective of
+     an attack is to figure out the secret key, decrypt a
+     message, or add or modify messages in some way. 
+
+     There are many methods or strategies for attacking a
+     confidential communication. One method is called a
+     man-in-the-middle attack, where someone listening to a
+     communication pretends to be one of the parties; another is
+     a replay attack, where an interloper reuses messages that
+     have already been exchanged in an attempt to discover a
+     pattern. 
+
+     In order to thwart such attacks and establish some level of
+     trust between communicating parties, it is necessary to
+     employ certain protocols. Inferno uses two well-established
+     protocols to permit keys to be exchanged and to permit
+     mutual authentication of the identities of two communicating
+     parties.
+
+     A digital signature is one way to guarantee that a message
+     sent by a user is indeed from that user and not someone
+     else. A signature does not require that a message be
+     encrypted. It can be appended to a message in order to
+     guarantee the identity of the sender. With Elgamal, creating
+     a signature requires that the user have a secret or private
+     key. Uniquely associated with the private key is another key
+     that can be distributed publicly. This public key is used
+     along with the private key to create a signature, and is
+     used by others to verify the signature.
+
+     To create a signature the Elgamal algorithm is applied to a
+     combination of the private key, the public key, and the
+     message to be signed. The output of the algorithm is the
+     signature. 
+
+     To verify the signature the receiver applies the Elgamal
+     algorithm to the public key and the signature. If the output
+     is the same message that was sent with the signature, then
+     the signature is valid. This method ensures that the user
+     receiving a message is indeed communicating with someone who
+     owns the public key. 
+
+     The next step is to determine who the owner of the public
+     key is, and to ensure that it belongs to the user that the
+     receiver wants to communicate with. This is accomplished by
+     having a third party create a certificate testifying to the
+     identity of the owner of the public key. This third party is
+     called a certifying authority (CA). If a user trusts the
+     certifying authority, a copy of a certificate is sufficient
+     to determine the ownership of a public key, and therefore,
+     the signature and identity of the user sending a message.
+
+     A certificate includes a variety of information: a user's
+     public key, the identity of the user, Diffie-Hellman
+     parameters, an expiration time for the certificate, and the
+     signature of the CA. The CA's public key is sent to the user
+     along with the certificate to verify the CA's signature.
+
+     Inferno provides two different methods for obtaining a
+     certificate depending on whether a user has access to a
+     keyboard or not. For users with a keyboard, Inferno offers a
+     variation of the Encrypted-Key-Exchange (EKE) protocol,
+     described in login(6). The protocol depends on establishing
+     trust between a user and a CA using a shared secret
+     (password). The secret must initially be established at the
+     CA by some secure means: typing a password on a secure
+     console at the CA, or transmitting the password securely
+     off-line, perhaps by unintercepted letter or untapped phone
+     call. To obtain a certificate, a user can subsequently enter
+     the secret on the client machine's keyboard; the protocol
+     obtains a certificate without revealing the secret.
+
+     For an application or user on a set-top box, which normally
+     does not have a keyboard, entering a password would be
+     difficult. Therefore, Inferno provides a different method to
+     establish trust. When the set-top box is turned on, it
+     creates a private/public key pair and dials the service
+     provider's CA to get a certificate. The CA returns a
+     certificate blinded or scrambled with a random bit string
+     known only to the CA. A hashed version of the string is
+     displayed on the user's screen. The user telephones the CA
+     and compares what is displayed with what the CA has sent. If
+     they match, and the user can prove his or her identity, the
+     CA makes the random bit string known to the user, so the
+     certificate can be unscrambled.
+
+  Authentication
+     Mutual authentication in Inferno requires that two parties
+     who want to communicate must have a certificate from the
+     same CA. As described above, the public key of the CA is
+     used to check the certificate sent by the other user. The
+     certificate is used to verify that the public key belongs to
+     the party that the user wants to communicate with.
+
+     If a user can trust the public key, then the key can be used
+     to check the signature sent by the other party. If the
+     public key unlocks the signature, then whoever sent the
+     signature must have the corresponding secret key, and
+     therefore, must be the owner of the public key.
+
+     The default protocol provided by Inferno for mutual
+     authentication is the station-to-station protocol described
+     in auth(6). It has the property that both parties can derive
+     the same key from exchanged and validated data but no
+     eavesdropper can determine the key.
+
+  Security at the Application Layer
+     An application can make use of the algorithms and protocols
+     described previously by using only a few library routines
+     such as: security-login(2), security-auth(2) and connect
+     (see security-ssl(2)). The Login module enables an
+     application that shares a password with a server acting as
+     the CA to obtain a certificate. After obtaining
+     certificates, two applications establish a mutually
+     authenticated connection by calling auth. Auth performs the
+     entire STS protocol. Connect connects an application to an
+     SSL (security sockets layer) device. Each application can
+     create message digests or encrypt messages by writing to
+     this device. Messages are received and decrypted by reading
+     from the SSL device.
+
+     Although Inferno provides these routines to make it easy to
+     establish secure communications, an application is not
+     restricted to their use. Lower-level routines used by login
+     and auth are also available to an application. These
+     routines enable an application to create alternate methods
+     for establishing security, or to perform specialized
+     functions like signing files.
+
+     Inferno also provides security routines tailored for set-top
+     boxes. For example, a set-top-box can use register(8)
+     instead of login (see security-login(2)). Register obtains a
+     certificate without requiring a user to enter a password.
+
+     There are also commands in section 8 that establish a server
+     as a Certifying Authority or `signer'. For example, a CA
+     needs a key and password to create a certificate. These can
+     be created on the server using the commands changelogin(8)
+     and createsignerkey(8).
+
+                         Inferno Manual
+SYS-INTRO(2)                                         SYS-INTRO(2)
+
+NAME
+     Sys: intro - introduction to the Sys module
+
+SYNOPSIS
+     include "sys.m";
+     sys := load Sys Sys->PATH;
+
+DESCRIPTION
+     Inferno system calls are provided by the built-in module
+     declared by sys.m. It contains the fundamental system data
+     structures and interfaces. There are currently 42 calls,
+     providing: file access; basic I/O; name space manipulation;
+     formatted output for Limbo; and basic character and string
+     manipulation.
+
+  File Name Space
+     Files are collected into a hierarchical organization called
+     a file tree starting in a directory called the root.
+     Filenames, also called paths, consist of a number of /
+     -separated path elements with the slashes corresponding to
+     directories. A path element must contain only printable
+     characters (those outside ASCII and Latin-1 control space).
+     A path element cannot contain a slash. The path element ..
+     refers to the parent directory of the directory containing
+     that element.
+
+     When a process presents a file name to Inferno, it is
+     evaluated by the following algorithm.
+
+     1.   Start with a directory that depends on the first
+          character of the path: / means the root of the main
+          hierarchy, # means the separate root of a kernel
+          device's file tree (see Section 3), and anything else
+          means the process's current working directory.
+
+     2.   For each path element, look up the element in the
+          directory, advance to that directory, do a possible
+          translation (see below).
+
+     3.   Repeat. The last step may yield a directory or regular
+          file.
+
+     The collection of files reachable from the root is called
+     the name space of a process.
+
+     A program can use bind or mount (see sys-bind(2)) to say
+     that whenever a specified file is reached during an
+     evaluation, that evaluation continues instead from a second
+     specified file. Also, these same calls create union
+     directories, which are concatenations of ordinary
+     directories that are searched sequentially until the desired
+     element is found. Using bind and mount to do name space
+     adjustment affects only the current name space group (see
+     below, and sys-pctl(2)). Certain conventions about the
+     layout of the name space should be preserved; see namespace
+     (4).
+
+     The operating system kernel records the file name used to
+     access each open file or directory. If the file is opened by
+     a relative path name (one that does not begin / or #), the
+     system makes the stored name absolute by prefixing the
+     string associated with the current directory. Similar
+     lexical adjustments are made for path names containing .
+     (dot) or .. (dot-dot). By this process, the system maintains
+     a record of the route by which each file was accessed.
+     Although there is a possibility for error—the name is not
+     maintained after the file is opened, so removals and
+     renamings can confound it—this simple method usually permits
+     the system to return, via sys-fd2path(2) and related calls
+     such as those of workdir(2), a valid name that may be used
+     to find a file again. This is also the source of the names
+     reported in the name space listing of ns(1) or the ns file
+     of prog(3).
+
+     Inferno gives special meaning in path names only to `/' and
+     an initial `#', but individual file servers might impose
+     further restrictions or conventions of their own. For
+     instance, the set of characters allowed in names by fs(3)
+     ultimately depends on the host operating system; and dial(2)
+     and cs(8) amongst others use `!' as a delimiter in network
+     names, preventing their use in the names of network devices.
+
+  File I/O
+     Files are opened for input or output by open or create (see
+     sys-open(2)). These calls return a reference to an object of
+     type FD (file descriptor) that identifies the file to
+     subsequent I/O calls, notably read and write (see sys-read
+     (2)). When the last reference to an FD disappears, the file
+     descriptor is released—closed, in Unix parlance. The FD
+     contains an integer file descriptor, similar to those in
+     Unix, but the FD type is the one passed to Limbo I/O
+     routines.
+
+     Integer file descriptor values range from 0 to n in the
+     current system, where the upper bound depends on the
+     underlying operating system. The system allocates the
+     numbers by selecting the lowest unused descriptor. They may
+     be reassigned using dup (see sys-dup(2)). Integer file
+     descriptor values are indices into a kernel-resident file
+     descriptor table, which is inherited from the parent when a
+     process is created by a Limbo spawn operation. A set of
+     processes, called a file descriptor group, shares that
+     table, so files opened by one process may be read and
+     written by other processes in the group.  See sys-pctl(2)
+     for more information.
+
+     By convention, file descriptor 0 is the standard input, 1 is
+     the standard output, and 2 is the standard error output. The
+     operating system is unaware of these conventions; it is
+     permissible to close file 0, or even to replace it by a file
+     open only for writing, but many programs will be confused by
+     such chicanery.
+
+     Files are normally read or written in sequential order. The
+     I/O position in the file is called the file offset and may
+     be set arbitrarily using the seek system call (sys-seek(2)).
+     An offset can also be passed as a parameter to pread and
+     pwrite (see sys-read(2)).
+
+     Inferno provides no guarantee of consistency should several
+     processes access a file concurrently. Guaranteed synchronous
+     writes are not available. Whether the exclusive-use
+     attributes described in sys-open(2) and sys-stat(2) will be
+     honoured for a file depends entirely on the underlying file
+     server (eg, fs(3)). Record locking in the underlying file
+     system is not supported by Inferno. Processes can coordinate
+     their file operations by other mechanisms.
+
+     Atomicity is guaranteed for byte counts no larger than the
+     9P message size; see read(5).
+
+     Directories may be opened and read much like regular files
+     (see sys-dirread(2)). They contain an integral number of
+     records, called directory entries. Each entry is a
+     machine-independent representation of the information about
+     an existing file in the directory, including the name,
+     ownership, permission, access dates, and so on.
+
+     The entry corresponding to an arbitrary file can be
+     retrieved by stat or fstat (see sys-stat(2)); wstat and
+     fwstat write back entries, thus changing the properties of a
+     file.
+
+     New files are made with create and deleted with remove (see
+     sys-open(2) and sys-remove(2)). Directories may not directly
+     be written; create, remove, wstat, and fwstat change them.
+
+  Process execution and control
+     A Limbo process, also called a thread, is the basic unit of
+     computation for Limbo application programming in the Inferno
+     operating system.
+
+     A newly spawned thread shares the same address space as that
+     of its creator thread. That is, the set of global  variables
+     that is in scope to one is in scope to the other. A change
+     made by one can be detected by the other. Since they are
+     scheduled independently, they should synchronize their
+     actions to share this data coherently.
+
+     The newly created thread also shares the same set of open
+     file descriptors and the current working directory.
+
+     Processes are also organized into process groups (pgrps)
+     that represent the set of threads of a single application
+     and can be terminated by a single kill request; see prog(3).
+
+     A newly-spawned thread automatically inherits the following
+     attributes: file name space (including shared current
+     directory); file descriptor group; and process group. A
+     thread can subsequently acquire a new, independent name
+     space, new or modified file descriptor group, or new process
+     group. See sys-pctl(2).
+
+  User/Group Identity
+     The Inferno operating system maintains user identifier (uid)
+     and group identifier (gid) strings for each process. These
+     values are also attributes of files and directories. See
+     sys-stat(2) and stat(5). A comparison of process and file
+     identities take place when a process attempts to open or
+     create a file.
+
+     When a path name crosses from one server to another the
+     process identities are mapped by each server receiving a
+     file request.
+
+     The uid and gid strings are assigned to the thread created
+     when a user logs into Inferno and cannot be changed.
+
+SOURCE
+     /emu/port/inferno.c
+     /os/port/inferno.c
+
+DIAGNOSTICS
+     System calls often return an integer status, or tuples
+     containing results and an integer status, and follow the
+     convention that a status of -1 is returned when an error
+     occurred; a non-negative value (usually 0) is returned on
+     success. If an error occurred, a detailed error message can
+     be obtained for the most recent error, using the `%r' format
+     of sys-print(2). Exceptions to this general rule are noted
+     in the `DIAGNOSTICS' sections.
+
+     From Limbo, system calls that return values on the heap, for
+     instance strings in Dir structures returned by sys-stat(2),
+     and arrays of directory entries returned by sys-readdir(2),
+     can also raise ``out of memory: heap'' exceptions when
+     attempting to create the return value.
+
+                         Inferno Manual
+INTRO(3)                                                 INTRO(3)
+
+NAME
+     intro - introduction to the Inferno devices
+
+DESCRIPTION
+     An Inferno device implements a file tree for client
+     processes. A file name beginning with a hash (number)
+     symbol, such as `#c', names the root of a file tree
+     implemented by a particular kernel device driver identified
+     by the character after the hash. Such names are usually
+     bound to conventional locations in the name space. For
+     example, after
+
+          sys->bind("#c", "/dev", sys->MREPL)
+
+     an ls(1) of /dev will list the files provided by the console
+     device.
+
+     A kernel device driver is a server in the sense of the
+     Inferno File Protocol, 9P (see Section 5), but with the
+     messages implemented by local rather than remote procedure
+     calls. Also, several of the messages (Nop, Flush, and Error)
+     have no subroutine equivalents.
+
+     When a system call is passed a file name beginning with
+     ``#'' it looks at the next character, and if that is a valid
+     device character it performs an attach(5) on the
+     corresponding device to get a channel representing the root
+     of that device's file tree. If there are any characters
+     after the device character but before the next ``/'' or end
+     of string, those characters are passed as parameter aname to
+     the attach.
+
+     Each kernel device has a conventional place at which to be
+     bound to the name space. The SYNOPSIS sections of the
+     following pages includes a shell bind command to put the
+     device in the conventional place. Most of these binds are
+     done automatically by the system when it initializes; see
+     init(8).
+
+SEE ALSO
+     intro(5), intro(2)
+
+                         Inferno Manual
+INTRO(4)                                                 INTRO(4)
+
+NAME
+     intro - introduction to file servers
+
+DESCRIPTION
+     This section describes programs that serve 9P (see intro
+     (5)), and can therefore be mounted, generating a new part of
+     the name space. Some, such as dossrv, thereby make the
+     contents of a foreign file format visible directly to
+     Inferno applications; others, such as acme, provide their
+     own services through operations on files in a name space.
+
+                         Inferno Manual
+INTRO(5)                                                 INTRO(5)
+
+NAME
+     intro - introduction to the Plan 9 File Protocol 9P in
+     Inferno
+
+SYNOPSIS
+     #include <lib9.h>
+     #include <styx.h>
+
+DESCRIPTION
+     Inferno uses the Plan 9 protocol 9P to make resources
+     visible as file hierarchies. There have been two versions of
+     9P, the most recent being 9P2000. Inferno originally used
+     its own protocol called Styx, which was a simplified version
+     of the first 9P protocol. When 9P was subsequently revised
+     as 9P2000, Inferno adopted that, but still using the name
+     Styx. To reduce confusion and to emphasise that Inferno and
+     Plan 9 use the same protocol, the name Styx is being
+     replaced by 9P. References to `Styx' remain in the programs
+     and documentation, but will eventually be eliminated.
+
+     An Inferno server is an agent that provides one or more
+     hierarchical file systems — file trees — that may be
+     accessed by Inferno processes. A server responds to requests
+     by clients to navigate the hierarchy, and to create, remove,
+     read, and write files. The prototypical server is a separate
+     machine that stores large numbers of user files on permanent
+     media. Another possibility for a server is to synthesize
+     files on demand, perhaps based on information on data
+     structures inside the kernel; the prog(3) kernel device is a
+     part of the Inferno kernel that does this. User programs can
+     also act as servers. One easy way is to serve a set of files
+     using the sys-file2chan(2) interface. More complex Limbo
+     file service applications can use styx(2) to handle the
+     protocol messages directly, or use styxservers(2) to provide
+     a higher-level framework for file serving.
+
+     A connection to a server is a bidirectional communication
+     path from the client to the server. There may be a single
+     client or multiple clients sharing the same connection. A
+     server's file tree is attached to a process group's name
+     space by bind and mount calls; see intro(2) and sys-bind(2).
+     Processes in the group are then clients of the server:
+     system calls operating on files are translated into requests
+     and responses transmitted on the connection to the
+     appropriate service.
+
+     The Plan 9 File Protocol, 9P, is used for messages between
+     clients and servers. A client transmits requests (T-messages
+     ) to a server, which subsequently returns replies (
+     R-messages) to the client. The combined acts of transmitting
+     (receiving) a request of a particular type, and receiving
+     (transmitting) its reply is called a transaction of that
+     type.
+
+     Each message consists of a sequence of bytes. Two-, four-,
+     and eight-byte fields hold unsigned integers represented in
+     little-endian order (least significant byte first). Data
+     items of larger or variable lengths are represented by a
+     two-byte field specifying a count, n, followed by n bytes of
+     data. Text strings are represented this way, with the text
+     itself stored as a UTF-8 encoded sequence of Unicode
+     characters (see utf(6)). Text strings in 9P messages are not
+     NUL\c -terminated: n counts the bytes of UTF-8 data, which
+     include no final zero byte. The NUL character is illegal in
+     all text strings in 9P, and is therefore excluded from file
+     names, user names, and so on.
+
+     Each 9P message begins with a four-byte size field
+     specifying the length in bytes of the complete message
+     including the four bytes of the size field itself. The next
+     byte is the message type, one of the constants in the module
+     styx(2), and in the C include file <styx.h> (see styx
+     (10.2)). The next two bytes are an identifying tag,
+     described below. The remaining bytes are parameters of
+     different sizes. In the message descriptions, the number of
+     bytes in a field is given in brackets after the field name.
+     The notation parameter[n] where n is not a constant
+     represents a variable-length parameter: n[2] followed by n
+     bytes of data forming the parameter. The notation string[s]
+     (using a literal s character) is shorthand for s[2] followed
+     by s bytes of UTF-8 text. (Systems may choose to reduce the
+     set of legal characters to reduce syntactic problems, for
+     example to remove slashes from name components, but the
+     protocol has no such restriction. Inferno names may contain
+     any printable character (that is, any character outside
+     hexadecimal 00-1F and 80-9F) except slash.) Messages are
+     transported in byte form to allow for machine independence;
+     styx(10.2) describes routines that convert to and from this
+     form into a machine-dependent C structure.
+
+MESSAGES
+          size[4] Tversion tag[2] msize[4] version[s]
+          size[4] Rversion tag[2] msize[4] version[s]
+
+          size[4] Tauth tag[2] afid[4] uname[s] aname[s]
+          size[4] Rauth tag[2] aqid[13]
+
+          size[4] Rerror tag[2] ename[s]
+
+          size[4] Tflush tag[2] oldtag[2]
+          size[4] Rflush tag[2]
+
+          size[4] Tattach tag[2] fid[4] afid[4] uname[s] aname[s]
+          size[4] Rattach tag[2] qid[13]
+
+          size[4] Twalk tag[2] fid[4] newfid[4] nwname[2] nwname
+          *(wname[s])
+          size[4] Rwalk tag[2] nwqid[2] nwqid*(wqid[13])
+
+          size[4] Topen tag[2] fid[4] mode[1]
+          size[4] Ropen tag[2] qid[13] iounit[4]
+
+          size[4] Tcreate tag[2] fid[4] name[s] perm[4] mode[1]
+          size[4] Rcreate tag[2] qid[13] iounit[4]
+
+          size[4] Tread tag[2] fid[4] offset[8] count[4]
+          size[4] Rread tag[2] count[4] data[count]
+
+          size[4] Twrite tag[2] fid[4] offset[8] count[4] data[
+          count]
+          size[4] Rwrite tag[2] count[4]
+
+          size[4] Tclunk tag[2] fid[4]
+          size[4] Rclunk tag[2]
+
+          size[4] Tremove tag[2] fid[4]
+          size[4] Rremove tag[2]
+
+          size[4] Tstat tag[2] fid[4]
+          size[4] Rstat tag[2] stat[n]
+
+          size[4] Twstat tag[2] fid[4] stat[n]
+          size[4] Rwstat tag[2]
+
+     Each T-message has a tag field, chosen and used by the
+     client to identify the message. The reply to the message
+     will have the same tag. Clients must arrange that no two
+     outstanding messages on the same connection have the same
+     tag. An exception is the tag NOTAG, defined as 16rFFFF in
+     styx(2) and styx(10.2): the client can use it, when
+     establishing a connection, to override tag matching in
+     version messages.
+
+     The type of an R-message will either be one greater than the
+     type of the corresponding T-message or Rerror, indicating
+     that the request failed. In the latter case, the ename field
+     contains a string describing the reason for failure.
+
+     The version message identifies the version of the protocol
+     and indicates the maximum message size the system is
+     prepared to handle. It also initializes the connection and
+     aborts all outstanding I/O on the connection. The set of
+     messages between version requests is called a session.
+
+     Most T-messages contain a fid, a 32-bit unsigned integer
+     that the client uses to identify a ``current file'' on the
+     server. Fids are somewhat like file descriptors in a user
+     process, but they are not restricted to files open for I/O:
+     directories being examined, files being accessed by sys-stat
+     (2) calls, and so on — all files being manipulated by the
+     operating system — are identified by fids. Fids are chosen
+     by the client. All requests on a connection share the same
+     fid space; when several clients share a connection, the
+     agent managing the sharing must arrange that no two clients
+     choose the same fid.
+
+     The fid supplied in an attach message will be taken by the
+     server to refer to the root of the served file tree. The
+     attach identifies the user to the server and may specify a
+     particular file tree served by the server (for those that
+     supply more than one).
+
+     Permission to attach to the service is proven by providing a
+     special fid, called afid, in the attach message.  This afid
+     is established by exchanging auth messages and subsequently
+     manipulated using read and write messages to exchange
+     authentication information not defined explicitly by 9P.
+     Once the authentication protocol is complete, the afid is
+     presented in the attach to permit the user to access the
+     service.
+
+     A walk message causes the server to change the current file
+     associated with a fid to be a file in the directory that is
+     the old current file, or one of its subdirectories. Walk
+     returns a new fid that refers to the resulting file.
+     Usually, a client maintains a fid for the root, and
+     navigates by walks from the root fid.
+
+     A client can send multiple T-messages without waiting for
+     the corresponding R-messages, but all outstanding T-messages
+     must specify different tags. The server may delay the
+     response to a request and respond to later ones; this is
+     sometimes necessary, for example when the client reads from
+     a file that the server synthesizes from external events such
+     as keyboard characters.
+
+     Replies (R-messages) to auth, attach, walk, open, and create
+     requests convey a qid field back to the client. The qid
+     represents the server's unique identification for the file
+     being accessed: two files on the same server hierarchy are
+     the same if and only if their qids are the same. (The client
+     may have multiple fids pointing to a single file on a server
+     and hence having a single qid.) The thirteen-byte qid fields
+     hold a one-byte type, specifying whether the file is a
+     directory, append-only file, etc., and two unsigned
+     integers: first the four-byte qid version, then the
+     eight-byte qid path. The path is an integer unique among all
+     files in the hierarchy. If a file is deleted and recreated
+     with the same name in the same directory, the old and new
+     path components of the qids should be different. The version
+     is a version number for a file; typically, it is incremented
+     every time the file is modified.
+
+     An existing file can be opened, or a new file may be created
+     in the current (directory) file. I/O of a given number of
+     bytes at a given offset on an open file is done by read and
+     write.
+
+     A client should clunk any fid that is no longer needed. The
+     remove transaction deletes files.
+
+     The stat transaction retrieves information about the file.
+     The stat field in the reply includes the file's name, access
+     permissions (read, write and execute for owner, group and
+     public), access and modification times, and owner and group
+     identifications (see sys-stat(2)). The owner and group
+     identifications are textual names. The wstat transaction
+     allows some of a file's properties to be changed.
+
+     A request can be aborted with a flush request. When a server
+     receives a Tflush, it should not reply to the message with
+     tag oldtag (unless it has already replied), and it should
+     immediately send an Rflush. The client must wait until it
+     gets the Rflush (even if the reply to the original message
+     arrives in the interim), at which point oldtag may be
+     reused.
+
+     Because the message size is negotiable and some elements of
+     the protocol are variable length, it is possible (although
+     unlikely) to have a situation where a valid message is too
+     large to fit within the negotiated size. For example, a very
+     long file name may cause a Rstat of the file or Rread of its
+     directory entry to be too large to send. In most such cases,
+     the server should generate an error rather than modify the
+     data to fit, such as by truncating the file name. The
+     exception is that a long error string in an Rerror message
+     should be truncated if necessary, since the string is only
+     advisory and in some sense arbitrary.
+
+     Most programs do not see the 9P protocol directly; instead
+     calls to library routines that access files are translated
+     by the mount driver, mnt(3), into 9P messages.
+
+DIRECTORIES
+     Directories are created by create with DMDIR set in the
+     permissions argument (see stat(5)). The members of a
+     directory can be found with read(5). All directories must
+     support walks to the directory .. (dot-dot) meaning parent
+     directory, although by convention directories contain no
+     explicit entry for .. or . (dot). The parent of the root
+     directory of a server's tree is itself.
+
+ACCESS PERMISSIONS
+     Each file server maintains a set of user and group names.
+     Each user can be a member of any number of groups. Each
+     group has a group leader who has special privileges (see
+     stat(5)). Every file request has an implicit user id (copied
+     from the original attach) and an implicit set of groups
+     (every group of which the user is a member).
+
+     Each file has an associated owner and group id and three
+     sets of permissions: those of the owner, those of the group,
+     and those of ``other'' users. When the owner attempts to do
+     something to a file, the owner, group, and other permissions
+     are consulted, and if any of them grant the requested
+     permission, the operation is allowed. For someone who is not
+     the owner, but is a member of the file's group, the group
+     and other permissions are consulted. For everyone else, the
+     other permissions are used. Each set of permissions says
+     whether reading is allowed, whether writing is allowed, and
+     whether executing is allowed. A walk in a directory is
+     regarded as executing the directory, not reading it.
+     Permissions are kept in the low-order bits of the file mode:
+     owner read/write/execute permission represented as 1 in bits
+     8, 7, and 6 respectively (using 0 to number the low order).
+     The group permissions are in bits 5, 4, and 3, and the other
+     permissions are in bits 2, 1, and 0.
+
+     The file mode contains some additional attributes besides
+     the permissions. If bit 31 (DMDIR) is set, the file is a
+     directory; if bit 30 (DMAPPEND) is set, the file is
+     append-only (offset is ignored in writes); if bit 29 (DMEXCL
+     ) is set, the file is exclusive-use (only one client may
+     have it open at a time); if bit 27 (DMAUTH) is set, the file
+     is an authentication file established by auth messages; if
+     bit 26 (DMTMP) is set, the contents of the file (or
+     directory) are not included in nightly archives. (Bit 28 is
+     skipped for historical reasons.) These bits are reproduced,
+     from the top bit down, in the type byte of the Qid: QTDIR,
+     QTAPPEND, QTEXCL, (skipping one bit) QTAUTH, and QTTMP. The
+     name QTFILE, defined to be zero, identifies the value of the
+     type for a plain file.
+
+SEE ALSO
+     intro(2), styx(2), styxservers(2), sys-bind(2), sys-stat(2),
+     mnt(3), prog(3), read(5), stat(5), styx(10.2)
+
+                         Inferno Manual
+INTRO(6)                                                 INTRO(6)
+
+NAME
+     intro - introduction to file formats
+
+DESCRIPTION
+     This section describes Inferno file formats that are meant
+     to be public (as opposed to formats that are for a program's
+     internal use). It also describes a few system conventions.
+
+                         Inferno Manual
+INTRO(7)                                                 INTRO(7)
+
+NAME
+     intro - introduction to databases
+
+DESCRIPTION
+     This manual section describes databases available on Inferno
+     and the commands and modules that access them.
+
+                         Inferno Manual
+INTRO(8)                                                 INTRO(8)
+
+NAME
+     intro - introduction to system configuration and
+     administration, and system utilities
+
+DESCRIPTION
+     This section of the manual describes commands that provide
+     system configuration and support system administration.
+     There are commands to start and shut down native and hosted
+     environments, administer authentication, build file system
+     images, initialise disks and flash memory, and configure
+     devices. It also documents the commands and interfaces to
+     service programs, including those providing services on the
+     network.
+
+                         Inferno Manual
+INTRO(9)                                                 INTRO(9)
+
+NAME
+     intro - introduction to Inferno Tk
+
+DESCRIPTION
+     This section of the manual provides a reference for the
+     Inferno Tk implementation, which is accessed by Limbo
+     programs via tk(2), and from sh(1) via sh-tk(1).
+
+     The following pages were derived by Vita Nuova from
+     documentation that is
+
+          Copyright © 1990 The Regents of the University of
+          California
+          Copyright © 1994-1996 Sun Microsystems, Inc.
+          See copyright(9) for the full copyright notice.
+
+     The format of the pages has changed to follow the format of
+     the rest of this manual, but more important, the content has
+     been changed (typically in small ways) to reflect the
+     variant of Tk implemented by Inferno.
+
+  Programming Interface
+     The interface to Inferno Tk is exclusively through the tk(2)
+     module; all the Tk commands described in this section of the
+     manual are excecuted by passing them as strings to the cmd
+     function in that module. The Inferno Tk implementation is
+     based on the Tk 4.0 documentation, but there are many
+     differences, probably the greatest of which is that there is
+     no associated Tcl implementation, so almost every Inferno
+     application using Tk will need to have some Limbo code
+     associated with it (the sh-tk(1) shell module can also
+     fulful this rôle). See ``An Overview of Limbo/Tk'' in Volume
+     2 for a tutorial-style introduction to the use of Inferno Tk
+     which summarises the differences from Tk 4.0.
+
+  Tk Commands
+     The command string passed to tk->cmd may contain one or more
+     Tk commands, separated by semicolons. A semicolon is not a
+     command separator when it is nested in braces ({}) or
+     brackets ([]) or it is escaped by a backslash (\). Each
+     command is divided into words: sequences of characters
+     separated by one or more blanks and tabs.
+
+     There is also a `super quote' convention: at any point in
+     the command string a single quote mark (') means that the
+     entire rest of the string should be treated as one word.
+
+     A word beginning with an opening brace ({) continues until
+     the balancing closing brace (}) is reached. The outer brace
+     characters are stripped. A backslash can be used to escape a
+     brace in this context. Backslash characters not used to
+     escape braces are left unchanged.
+
+     A word beginning with an opening bracket ([) continues until
+     the balancing closing bracket (]) is reached. The enclosed
+     string is then evaluated as if it were a command string, and
+     the resulting value is used as the contents of the word.
+
+     Single commands are executed in order until they are all
+     done or an error is encountered. By convention, an error is
+     signaled by a return value starting with an exclamation mark
+     (!). The return value from tk->cmd is the return value of
+     the first error-producing command or else the return value
+     of the final single command.
+
+     To execute a single command, the first word is examined. It
+     must either begin with dot (.) in which case it must name an
+     existing widget, which will interpret the rest of the
+     command according to its type, or one of the following
+     words, each of which is documented in a manual page of that
+     name in this section:
+
+     bind         focus        lower        scrollbar
+     button       frame        menu         see
+     canvas       grab         menubutton   send
+     checkbutton  grid         pack         text
+     cursor       image        radiobutton  update
+     destroy      label        raise        variable
+     entry        listbox      scale
+
+  Widget Options
+     Each manual page in this section documents the options that
+     a particular command will accept. A number of options are
+     common to several of the widgets and are named as ``standard
+     options'' near the beginning of the manual page for each
+     widget. These options are documented in options(9). The
+     types of value required as arguments to options within
+     Inferno Tk are documented under types(9).
+
+SEE ALSO
+     options(9), types(9), tk(2), sh-tk(1), tkcmd(1), wmlib(2),
+     draw-intro(2), ``An Overview of Limbo/Tk'' in Volume 2.
+
+BUGS
+     The bracket ([]) command interpretation is not applied
+     consistently throughout the Inferno Tk commands (notably,
+     the argument to the send(9) command will not interpret this
+     correctly). Moreover, if the string to be substituted is
+     significantly bigger than the command it was substituting,
+     then it will be truncated.
+
+                         Inferno Manual
+INTRO(10)                                               INTRO(10)
+
+NAME
+     intro - introduction to hosted and native implementation
+
+DESCRIPTION
+     Inferno provides a collection of compiler suites, libraries
+     and two closely-related kernels to span a range of host and
+     native platforms. Section 10 of this manual is divided into
+     subsections numbered in the same way as the main manual:
+     10.1 for commands, 10.2 for library and kernel routines, and
+     10.6 for file formats.
+
+     Section 10.1 describes the various compiler and utility
+     commands provided to support compilation and
+     cross-compilation of native kernels. These are derived from
+     similarly named programs of the system Plan 9 from Bell
+     Labs, converted to ANSI C to provide a consistent, portable
+     environment for cross-compiling any native kernel on any
+     host platform.
+
+     Section 10.2 describes the functions publicly available to
+     the authors of kernel code, particularly device drivers
+     (real and virtual). This section will eventually be much
+     expanded, but this makes a start. See the description of the
+     conventional header files below.
+
+     Section 10.6 describes include the native object file
+     formats, the Inferno (Plan 9) object library (archive)
+     format, and system configuration files.
+
+     Section 10.8 describes bootstrap programs and procedures for
+     native Inferno systems.
+
+  Native kernel declarations
+     The SYNOPSIS subsections in section 10.2 do not show the
+     header files needed for the standard kernel declarations.
+     The primary combinations summarised below:
+
+               #include	"u.h"
+               #include	"../port/lib.h"
+               #include	"mem.h"
+               #include	"dat.h"
+               #include	"fns.h"
+               #include	"../port/error.h"
+
+          furthermore, added in IP code:
+          #include "../ip/ip.h"
+
+          furthermore, in hardware device drivers:
+          #include "io.h"
+          #include "ureg.h"
+
+          furthermore, in network interfaces or ether drivers:
+          #include "../port/netif.h"
+
+     There might also be specific include files needed by drivers
+     on particular platforms or to use specialised kernel
+     interfaces. The easiest method is to check the source of
+     likely-looking drivers nearby.
+
+                         Inferno Manual
